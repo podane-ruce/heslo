@@ -5,14 +5,14 @@ const convertToTwoDigitString = (number)=>{
     const numStr = String(number);
     return numStr.length === 1 ? "0" + numStr : numStr;
 };
-const getCurrentHours = ()=>{
+const getCurrentHour = ()=>{
     return new Date().getHours();
 };
 const get_current_password = ()=>{
-    return date_to_four_digit_password(getCurrentHours());
+    return date_to_four_digit_password(getCurrentHour());
 };
 const get_future_password = ()=>{
-    const current_hour = (getCurrentHours() + 1) % 24;
+    const current_hour = (getCurrentHour() + 1) % 24;
     return date_to_four_digit_password(current_hour);
 };
 const date_to_four_digit_password = (hour)=>{
@@ -24,12 +24,19 @@ const date_to_four_digit_password = (hour)=>{
     const psw = parseFloat(String(rand / m)).toFixed(4);
     return psw.substring(psw.length - 4, psw.length);
 };
-const renderCurrentPasswords = (currentPassword, futurePassword)=>{
+let lastHour = getCurrentHour();
+const renderPasswords = (currentPassword, futurePassword)=>{
     const curPswEl = document.getElementById('current-password');
     const futurePswEl = document.getElementById('future-password');
     if (curPswEl && futurePswEl) {
         curPswEl.innerText = currentPassword;
         futurePswEl.innerText = futurePassword;
+        const validFromEl = document.querySelector('.future-password-card .valid-from');
+        const validToEl = document.querySelector('.future-password-card .valid-to');
+        if (validFromEl && validToEl) {
+            validFromEl.innerHTML = getCurrentHour() + 1 + '.00';
+            validToEl.innerHTML = getCurrentHour() + 2 + '.00';
+        }
     }
 };
 const renderTicker = ()=>{
@@ -46,11 +53,17 @@ const renderTicker = ()=>{
     }
 };
 const render = ()=>{
-    renderCurrentPasswords(get_current_password(), get_future_password());
     renderTicker();
+    if (lastHour === getCurrentHour()) {
+        return;
+    } else {
+        lastHour = getCurrentHour();
+    }
+    renderPasswords(get_current_password(), get_future_password());
 };
 const initPasswordRendering = ()=>{
-    render();
+    renderPasswords(get_current_password(), get_future_password());
+    renderTicker();
     setInterval(()=>{
         render();
     }, 1000);

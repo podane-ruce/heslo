@@ -91,7 +91,6 @@ a {
 
 abbr[title] {
     border-bottom: none; /* 1 */
-    text-decoration: underline; /* 2 */
     text-decoration: underline dotted; /* 2 */
 }
 
@@ -435,6 +434,7 @@ header {
     display: flex;
     flex-direction: column;
     opacity: 0.875;
+    align-items: center;
 }
 
 .proportional-time-display {

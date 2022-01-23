@@ -8,18 +8,18 @@ const convertToTwoDigitString = (number: number): string => {
   return numStr.length === 1 ? ("0" + numStr) : numStr;
 };
 
-const getCurrentHours = (): number => {
+const getCurrentHour = (): number => {
   return new Date().getHours();
 };
 
 // We are using local time
 const get_current_password = (): string => {
-  return date_to_four_digit_password(getCurrentHours());
+  return date_to_four_digit_password(getCurrentHour());
 };
 
 // valid password in the next hour
 const get_future_password = (): string => {
-  const current_hour = (getCurrentHours() + 1) % 24;
+  const current_hour = (getCurrentHour() + 1) % 24;
   return date_to_four_digit_password(current_hour);
 };
 
@@ -40,14 +40,23 @@ const date_to_four_digit_password = (hour: number): string => {
   return psw.substring((psw.length - 4), psw.length);
 };
 
+let lastHour = getCurrentHour();
+
 // Render passwords
-const renderCurrentPasswords = (currentPassword: string, futurePassword: string): void => {
+const renderPasswords = (currentPassword: string, futurePassword: string): void => {
   const curPswEl = document.getElementById('current-password');
   const futurePswEl = document.getElementById('future-password');
 
   if(curPswEl && futurePswEl) {
     curPswEl.innerText = currentPassword;
     futurePswEl.innerText = futurePassword;
+
+    const validFromEl = document.querySelector('.future-password-card .valid-from');
+    const validToEl = document.querySelector('.future-password-card .valid-to');
+    if (validFromEl && validToEl) {
+      validFromEl.innerHTML = (getCurrentHour() + 1) + '.00';
+      validToEl.innerHTML = (getCurrentHour() + 2) + '.00';
+    }
   }
 };
 
@@ -67,17 +76,29 @@ const renderTicker = (): void => {
   }
 }
 
+
 const render = ():void => {
-  renderCurrentPasswords(
+  renderTicker();
+
+  if (lastHour === getCurrentHour()) {
+    return;
+  } else {
+    lastHour = getCurrentHour();
+  }
+
+  renderPasswords(
     get_current_password(),
     get_future_password()
   );
-  renderTicker();
 }
 
 const initPasswordRendering = ():void => {
   // initial render
-  render();
+  renderPasswords(
+    get_current_password(),
+    get_future_password()
+  );
+  renderTicker();
 
   setInterval(() => {
     render();
