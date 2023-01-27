@@ -18,7 +18,7 @@ const get_future_password = ()=>{
 const date_to_four_digit_password = (hour)=>{
     let date = new Date();
     const today = convertToTwoDigitString(date.getDate()) + convertToTwoDigitString(date.getMonth() + 1) + date.getFullYear();
-    const m = 2 ** 24;
+    const m = 16777216; // 2^24
     const seed = parseInt(convertToTwoDigitString(hour) + today);
     const rand = (1140671485 * seed + 128201163) % m;
     const psw = parseFloat(String(rand / m)).toFixed(4);
@@ -34,8 +34,8 @@ const renderPasswords = (currentPassword, futurePassword)=>{
         const validFromEl = document.querySelector('.future-password-card .valid-from');
         const validToEl = document.querySelector('.future-password-card .valid-to');
         if (validFromEl && validToEl) {
-            validFromEl.innerHTML = getCurrentHour() + 1 + '.00';
-            validToEl.innerHTML = getCurrentHour() + 2 + '.00';
+            validFromEl.innerHTML = ((getCurrentHour() + 1) % 24) + '.00';
+            validToEl.innerHTML = ((getCurrentHour() + 2) % 24) + '.00';
         }
     }
 };
